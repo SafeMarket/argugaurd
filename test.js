@@ -1,6 +1,6 @@
 /* globals describe it */
 
-const argugaurd = require('./')
+const arguguard = require('./')
 const ArgumentsLengthError = require('./errors/ArgumentsLength')
 const DescriptionsTypeError = require('./errors/DescriptionsType')
 const ArgsTypeError = require('./errors/ArgsType')
@@ -18,109 +18,109 @@ const b = new B()
 
 chai.should()
 
-describe('argugaurd', () => {
+describe('arguguard', () => {
   describe('ArgumentsLengthError', () => {
     it('should throw with 0 arguments', () => {
       (() => {
-        argugaurd()
+        arguguard()
       }).should.throw(ArgumentsLengthError)
     })
     it('should throw with 3 arguments', () => {
       (() => {
-        argugaurd(1, 2, 3)
+        arguguard(1, 2, 3)
       }).should.throw(ArgumentsLengthError)
     })
     it('should NOT throw  with 2 arguments', () => {
       (() => {
-        argugaurd(1, 2)
+        arguguard(1, 2)
       }).should.not.throw(ArgumentsLengthError)
     })
   })
   describe('DescriptionsTypeError', () => {
     it('should throw with descriptions as object', () => {
       (() => {
-        argugaurd({}, true)
+        arguguard({}, true)
       }).should.throw(DescriptionsTypeError)
     })
     it('should NOT throw with descriptions as array', () => {
       (() => {
-        argugaurd([], true)
+        arguguard([], true)
       }).should.not.throw(DescriptionsTypeError)
     })
   })
   describe('ArgsTypeError', () => {
     it('should throw with args as boolean', () => {
       (() => {
-        argugaurd([], true)
+        arguguard([], true)
       }).should.throw(ArgsTypeError)
     })
     it('should NOT throw with args as array', () => {
       (() => {
-        argugaurd([], [])
+        arguguard([], [])
       }).should.not.throw(ArgsTypeError)
     })
   })
   describe('ArgsLengthError', () => {
     it('should throw with args too small', () => {
       (() => {
-        argugaurd(['string'], [])
+        arguguard(['string'], [])
       }).should.throw(ArgsLengthError)
     })
     it('should throw with args too large', () => {
       (() => {
-        argugaurd(['string'], ['hello', 'world'])
+        arguguard(['string'], ['hello', 'world'])
       }).should.throw(ArgsLengthError)
     })
     it('should NOT throw with args just right', () => {
       (() => {
-        argugaurd(['string'], ['hello world'])
+        arguguard(['string'], ['hello world'])
       }).should.not.throw(ArgsLengthError)
     })
   })
   describe('ArgTypeError', () => {
     it('should throw with number:{}', () => {
       (() => {
-        argugaurd(['number'], [{}])
+        arguguard(['number'], [{}])
       }).should.throw(ArgTypeError)
     })
     it('should throw with number:3, array:{}', () => {
       (() => {
-        argugaurd(['number', 'array'], [3, {}])
+        arguguard(['number', 'array'], [3, {}])
       }).should.throw(ArgTypeError)
     })
     it('should NOT throw with number:3, array:[]', () => {
       (() => {
-        argugaurd(['number', 'array'], [3, []])
+        arguguard(['number', 'array'], [3, []])
       }).should.throw(ArgTypeError)
     })
   })
   describe('ArgInstanceError', () => {
     it('should throw with A:{}', () => {
       (() => {
-        argugaurd([A], [{}])
+        arguguard([A], [{}])
       }).should.throw(ArgInstanceError)
     })
     it('should throw with A:3, Array:{}', () => {
       (() => {
-        argugaurd([A, B], [a, {}])
+        arguguard([A, B], [a, {}])
       }).should.throw(ArgInstanceError)
     })
     it('should NOT throw with A:3, Array:[]', () => {
       (() => {
-        argugaurd([A, B], [a, b])
+        arguguard([A, B], [a, b])
       }).should.not.throw(ArgInstanceError)
     })
   })
   describe('DescriptionTypeError', () => {
     it('should throw with {}:{}', () => {
       (() => {
-        argugaurd([{}], [{}])
+        arguguard([{}], [{}])
       }).should.throw(DescriptionTypeError)
     })
   })
   describe('success', () => {
     it('should pass with A:a, number:1, Array:[], object:[], Object:{}, object:{}', () => {
-      argugaurd(
+      arguguard(
         [A, 'number', Array, 'object', Object, 'object'],
         [a, 1, [], [], {}, {}]
       )
@@ -131,26 +131,26 @@ describe('argugaurd', () => {
 describe('readme', () => {
 
   function myFunction(myNumber, myArray){
-    argugaurd(['number', Array], arguments)
+    arguguard(['number', Array], arguments)
     return true
   }
 
   it('myFunction errors should match', () => {
     try { myFunction(3) } catch (err) {
-      err.message.should.equal('Argugaurd:ArgsLengthError: Expected args(1) to have same length as descriptions(2)')
+      err.message.should.equal('Arguguard:ArgsLengthError: Expected args(1) to have same length as descriptions(2)')
     }
     try { myFunction('3', []) } catch (err) {
-      err.message.should.equal('Argugaurd:ArgTypeError: Expected arguments[0]("string") to have type of "number"')
+      err.message.should.equal('Arguguard:ArgTypeError: Expected arguments[0]("string") to have type of "number"')
     }
     try { myFunction(3, {}) } catch (err) {
-      err.message.should.equal('Argugaurd:ArgInstanceError: Expected args[1]("Array") to be instance of "Object"')
+      err.message.should.equal('Arguguard:ArgInstanceError: Expected args[1]("Array") to be instance of "Object"')
     }
     myFunction(3, [])
   })
 
-  it('argugaurd errors should match', () => {
-    try { argugaurd('number', arguments) } catch (err) {
-      err.message.should.equal('Argugaurd:DescriptionsTypeError: Expected descriptions("String") to be instance of "Array"')
+  it('arguguard errors should match', () => {
+    try { arguguard('number', arguments) } catch (err) {
+      err.message.should.equal('Arguguard:DescriptionsTypeError: Expected descriptions("String") to be instance of "Array"')
     }
   })
 })

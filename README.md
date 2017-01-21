@@ -12,39 +12,39 @@ $ npm i arguguard --save-dev
 
 ## Usage
 
-### `argugaurd([description1, description2, ...], arguments)``
+arguguard takes two arguments. The first is a list of descriptions, the second is the arguments object.
 
-Argugaurd takes two arguments. The first is a list of descriptions, the second is the arguments object from the function.
+`arguguard([description1, description2, ...], arguments)``
 
 Each description can either be a string (like `number` or `boolean`) or a class function (like `Array` or `MyClass`).
 If the description is a string a `typeof` check will be used. If its a class function, an `instanceof` check will be used.
 
 ```js
-var argugaurd = require('argugaurd')
+var arguguard = require('arguguard')
 
 function myFunction(myNumber, myArray){
-  argugaurd(['number', Array], arguments)
+  arguguard(['number', Array], arguments)
   return true
 }
 
 myFunction(3)
->> Argugaurd:ArgsLengthError: Expected args(1) to have same length as descriptions(2)
+>> Arguguard:ArgsLengthError: Expected args(1) to have same length as descriptions(2)
 myFunction('3', [])
->> Argugaurd:ArgTypeError: Expected arguments[0]("string") to have type of "number"
+>> Arguguard:ArgTypeError: Expected arguments[0]("string") to have type of "number"
 myFunction(3, {})
->> Argugaurd:ArgInstanceError: Expected args[1]("Array") to be instance of "Object"
+>> Arguguard:ArgInstanceError: Expected args[1]("Array") to be instance of "Object"
 myFunction(3, [])
 >> ✓
 ```
 
 ### Defensiveness
 
-The `argugaurd` api is defensively programmed. Meaning it'll prevent against most mistakes
+The `arguguard` api is defensively programmed. Meaning it'll prevent against most mistakes
 
 ```js
-argugaurd('number', arguments)
->> Argugaurd:DescriptionsTypeError: Expected descriptions("String") to be instance of "Array"
-argugaurd(['number'], arguments)
+arguguard('number', arguments)
+>> Arguguard:DescriptionsTypeError: Expected descriptions("String") to be instance of "Array"
+arguguard(['number'], arguments)
 >> ✓
 
 ```
@@ -59,7 +59,7 @@ $ npm i -d && npm test
 
 ## Contributing
 
-Pull requests and stars are always welcome. For bugs and feature requests, [please create an issue](https://github.com/SafeMarket/argugaurd/issues)
+Pull requests and stars are always welcome. For bugs and feature requests, [please create an issue](https://github.com/SafeMarket/arguguard/issues)
 
 ## Author
 

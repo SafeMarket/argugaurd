@@ -6,7 +6,7 @@ const ArgTypeError = require('./errors/ArgType')
 const ArgInstanceError = require('./errors/ArgInstance')
 const DescriptionTypeError = require('./errors/DescriptionType')
 
-module.exports = function argugaurd(descriptions, args) {
+module.exports = function arguguard(descriptions, args) {
   if (arguments.length !== 2) {
     throw new ArgumentsLengthError(`Expected 2 arguments, received ${arguments.length}`)
   }

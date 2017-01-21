@@ -1,3 +1,3 @@
 const createTestableError = require('testable-error')
 
-module.exports = createTestableError('Argugaurd:ArgsLengthError')
+module.exports = createTestableError('Arguguard:ArgsLengthError')

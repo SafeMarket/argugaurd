@@ -12,12 +12,14 @@ $ npm i arguguard --save-dev
 
 ## Usage
 
-arguguard takes two arguments. The first is a list of descriptions, the second is the arguments object.
+arguguard takes three arguments.
 
-`arguguard([description1, description2, ...], arguments)``
+`arguguard(label, [description1, description2, ...], arguments)``
 
-Each description can either be a string (like `number` or `boolean`) or a class function (like `Array` or `MyClass`).
+1. A string label such as `myFunction()` that will be used in error reporting
+2. An array of descriptions. Each description can either be a string (like `number` or `boolean`) or a class function (like `Array` or `MyClass`).
 If the description is a string a `typeof` check will be used. If its a class function, an `instanceof` check will be used.
+3. The arguments to test.
 
 ```js
 var arguguard = require('arguguard')

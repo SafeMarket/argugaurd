@@ -22,29 +22,30 @@ If the description is a string a `typeof` check will be used. If its a class fun
 ```js
 var arguguard = require('arguguard')
 
-function myFunction(myNumber, myArray){
-  arguguard(['number', Array], arguments)
-  return true
+function myFunction(myNumber, myClass) {
+  arguguard('myFunction()', ['number', MyClass], arguments)
 }
 
-myFunction(3)
->> Arguguard:ArgsLengthError: Expected args(1) to have same length as descriptions(2)
-myFunction('3', [])
->> Arguguard:ArgTypeError: Expected arguments[0]("string") to have type of "number"
-myFunction(3, {})
->> Arguguard:ArgInstanceError: Expected args[1]("Array") to be instance of "Object"
-myFunction(3, [])
+myFunction()
+>> Arguguard:User:ArgumentsLengthError: myFunction() arguments.length should be "2", received "0"
+myFunction(1, [true], callback)
+>> Arguguard:User:ArgumentsLengthError: myFunction() arguments.length should be "2", received "3"
+myFunction('1', [])
+>> Arguguard:User:ArgumentTypeError: myFunction() arguments[0] type should be "number", received "string"
+myFunction(1, {})
+>> Arguguard:User:ArgumentInstanceError: myFunction() arguments[1] constructor should be "MyClass", received "Object"
+myFunction(1, new MyClass())
 >> ✓
 ```
 
-### Defensiveness
+### Api Errors
 
-The `arguguard` api is defensively programmed. Meaning it'll prevent against most mistakes
+The `arguguard` api is defensively programmed and will throw errors if called with the wrong arguments
 
 ```js
-arguguard('number', arguments)
->> Arguguard:DescriptionsTypeError: Expected descriptions("String") to be instance of "Array"
-arguguard(['number'], arguments)
+arguguard(['number', MyClass], arguments)
+>> Arguguard:Api:ArgumentsLengthError: arguguard() arguments.length should be "3", received "2"
+arguguard('myFunction()', ['number', MyClass], arguments)
 >> ✓
 
 ```

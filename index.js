@@ -1,42 +1,65 @@
-const ArgumentsLengthError = require('./errors/ArgumentsLength')
-const DescriptionsTypeError = require('./errors/DescriptionsType')
-const ArgsTypeError = require('./errors/ArgsType')
-const ArgsLengthError = require('./errors/ArgsLength')
-const ArgTypeError = require('./errors/ArgType')
-const ArgInstanceError = require('./errors/ArgInstance')
-const DescriptionTypeError = require('./errors/DescriptionType')
+const ApiArgumentsLengthError = require('./errors/api/ArgumentsLength')
+const ApiLabelTypeError = require('./errors/api/LabelType')
+const ApiArgsInstanceError = require('./errors/api/ArgsInstance')
+const ApiDescriptionsInstanceError = require('./errors/api/DescriptionsInstance')
+const ApiDescriptionError = require('./errors/api/Description')
 
-module.exports = function arguguard(descriptions, args) {
-  if (arguments.length !== 2) {
-    throw new ArgumentsLengthError(`Expected 2 arguments, received ${arguments.length}`)
+const UserArgumentsLengthError = require('./errors/user/ArgumentsLength')
+const UserArgumentTypeError = require('./errors/user/ArgumentType')
+const UserArgumentInstanceError = require('./errors/user/ArgumentInstance')
+
+function getMessage(label, expects, actual) {
+  return `${label} should be "${expects}", received "${actual}"`
+}
+
+function argumentValidate(label, description, argument) {
+  if (typeof description === 'string') {
+    // eslint-disable-next-line valid-typeof
+    if (typeof argument !== description) {
+      throw new UserArgumentTypeError(getMessage(`${label} type`, description, typeof argument))
+    }
   }
-  if (!(descriptions instanceof Array)) {
-    throw new DescriptionsTypeError(`Expected descriptions("${descriptions.constructor.name}") to be instance of "Array"`)
+
+  if (typeof description === 'function') {
+    if (!(argument instanceof description)) {
+      throw new UserArgumentInstanceError(
+        getMessage(`${label} constructor`, description.name, argument.constructor.name)
+      )
+    }
   }
-  if (!(args instanceof Object)) {
-    throw new ArgsTypeError('Expected args to be instance of object')
-  }
+}
+
+
+module.exports = function arguguard(label, descriptions, args) {
+  apiValidate(...arguments)
   if (args.length !== descriptions.length) {
-    throw new ArgsLengthError(`Expected args(${args.length}) to have same length as descriptions(${descriptions.length})`)
+    throw new UserArgumentsLengthError(getMessage(`${label} arguments.length`, descriptions.length, args.length))
   }
   descriptions.forEach((description, index) => {
-    const arg = args[index]
-    if (typeof description === 'string') {
-      const argType = typeof arg
-      // eslint-disable-next-line valid-typeof
-      if (argType !== description) {
-        throw new ArgTypeError(`Expected arguments[${index}]("${argType}") to have type of "${description}"`)
-      }
-      return
-    }
-
-    if (typeof description === 'function') {
-      if (!(arg instanceof description)) {
-        throw new ArgInstanceError(`Expected args[${index}]("${description.name}") to be instance of "${arg.constructor.name}"`)
-      }
-      return
-    }
-
-    throw new DescriptionTypeError(`Expected descriptions[${index}] to to have type string or function but received ${typeof description}`)
+    argumentValidate(`${label} arguments[${index}]`, description, args[index])
   })
+}
+
+function apiValidate(label, descriptions, args) {
+  if (arguments.length !== 3) {
+    throw new ApiArgumentsLengthError(getMessage('arguguard() arguments.length', 3, arguments.length))
+  }
+  if (typeof label !== 'string') {
+    throw new ApiLabelTypeError(getMessage('arguguard() arguments[0] (label)', 'string', typeof label))
+  }
+  if (!(descriptions instanceof Array)) {
+    throw new ApiDescriptionsInstanceError(getMessage('arguguard() arguments[1] (description)', 'Array', descriptions.constructor.name))
+  }
+  descriptions.forEach((description, index) => {
+    if (typeof description === 'string') {
+      return
+    }
+    if (typeof description === 'function') {
+      return
+    }
+    throw new ApiDescriptionError(getMessage(`arguguard() descriptions[${index}]`, 'string/function', typeof description))
+  })
+  if (!(args instanceof Object)) {
+    throw new ApiArgsInstanceError(getMessage('arguguard() arguments[2] (args)', 'Object', args.constructor.name))
+  }
 }

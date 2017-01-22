@@ -17,8 +17,10 @@ arguguard takes three arguments.
 `arguguard(label, [description1, description2, ...], arguments)``
 
 1. A string label such as `myFunction()` that will be used in error reporting
-2. An array of descriptions. Each description can either be a string (like `number` or `boolean`) or a class function (like `Array` or `MyClass`).
-If the description is a string a `typeof` check will be used. If its a class function, an `instanceof` check will be used.
+2. An array of descriptions. Each description can either be one of 3 things
+  1. A string (ex. `"number"` or `"boolean"`) in which a `typeof` check will be performed
+  2. A function (ex. `Array` or `MyClass`) in which case a `instanceof` check will be performed
+  3. A single-value array (ex. `["number"]` or `[MyClass]`) in which case a `typeof`/`instanceof` check will be performed on each element of the array
 3. The arguments to test.
 
 ```js

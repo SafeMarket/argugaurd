@@ -4,7 +4,7 @@
   "description": "Strict argument validation with testable errors",
   "main": "index.js",
   "scripts": {
-    "test": "mocha test.js"
+    "test": "mocha test.js --bail"
   },
   "repository": {
     "type": "git",

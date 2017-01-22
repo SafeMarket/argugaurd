@@ -24,21 +24,27 @@ If the description is a string a `typeof` check will be used. If its a class fun
 ```js
 var arguguard = require('arguguard')
 
-function myFunction(myNumber, myClass) {
-  arguguard('myFunction()', ['number', MyClass], arguments)
+function myFunction(myNumber, myClass, arrayofMyClass) {
+  arguguard('myFunction()', ['number', MyClass, [MyClass]], arguments)
 }
 
 myFunction()
->> Arguguard:User:ArgumentsLengthError: myFunction() arguments.length should be "2", received "0"
+>> Arguguard:User:ArgumentsLengthError: myFunction() arguments.length should be "3", received "0"
 
-myFunction(1, [true], callback)
->> Arguguard:User:ArgumentsLengthError: myFunction() arguments.length should be "2", received "3"
+myFunction(1, myClass, [myClass, myClass], callback)
+>> Arguguard:User:ArgumentsLengthError: myFunction() arguments.length should be "3", received "4"
 
-myFunction('1', [])
+myFunction('1', myClass, [myClass, myClass])
 >> Arguguard:User:ArgumentTypeError: myFunction() arguments[0] type should be "number", received "string"
 
-myFunction(1, {})
+myFunction(1, {}, [myClass, myClass])
 >> Arguguard:User:ArgumentInstanceError: myFunction() arguments[1] constructor should be "MyClass", received "Object"
+
+myFunction(1, myClass, myClass)
+>> Arguguard:User:ArgumentInstanceError: myFunction() arguments[2] constructor should be "Array", received "MyClass"
+
+myFunction(1, myClass, [myClass, MyClass])
+>> Arguguard:User:ArgumentInstanceError: myFunction() arguments[2][1] constructor should be "MyClass", received "Function"
 
 myFunction(1, new MyClass())
 >> ✓
@@ -49,10 +55,10 @@ myFunction(1, new MyClass())
 The `arguguard` api is defensively programmed and will throw errors if called with the wrong arguments
 
 ```js
-arguguard(['number', MyClass], arguments)
+arguguard(['number', MyClass, [MyClass]], arguments)
 >> Arguguard:Api:ArgumentsLengthError: arguguard() arguments.length should be "3", received "2"
 
-arguguard('myFunction()', ['number', MyClass], arguments)
+arguguard('myFunction()', ['number', MyClass, [MyClass]], arguments)
 >> ✓
 ```
 

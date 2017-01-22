@@ -30,12 +30,16 @@ function myFunction(myNumber, myClass) {
 
 myFunction()
 >> Arguguard:User:ArgumentsLengthError: myFunction() arguments.length should be "2", received "0"
+
 myFunction(1, [true], callback)
 >> Arguguard:User:ArgumentsLengthError: myFunction() arguments.length should be "2", received "3"
+
 myFunction('1', [])
 >> Arguguard:User:ArgumentTypeError: myFunction() arguments[0] type should be "number", received "string"
+
 myFunction(1, {})
 >> Arguguard:User:ArgumentInstanceError: myFunction() arguments[1] constructor should be "MyClass", received "Object"
+
 myFunction(1, new MyClass())
 >> ✓
 ```
@@ -47,9 +51,9 @@ The `arguguard` api is defensively programmed and will throw errors if called wi
 ```js
 arguguard(['number', MyClass], arguments)
 >> Arguguard:Api:ArgumentsLengthError: arguguard() arguments.length should be "3", received "2"
+
 arguguard('myFunction()', ['number', MyClass], arguments)
 >> ✓
-
 ```
 
 ## Running tests

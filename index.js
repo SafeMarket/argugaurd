@@ -13,6 +13,16 @@ function getMessage(label, expects, actual) {
   return `${label} should be "${expects}", received "${actual}"`
 }
 
+function hasConstructor(thing) {
+  try {
+    if (thing.constructor) {
+      return true
+    }
+  } catch (err) {
+    return false
+  }
+}
+
 function argumentValidate(label, description, argument) {
   if (typeof description === 'string') {
     // eslint-disable-next-line valid-typeof
@@ -24,7 +34,7 @@ function argumentValidate(label, description, argument) {
   if (typeof description === 'function') {
     if (!(argument instanceof description)) {
       throw new UserArgumentInstanceError(
-        getMessage(`${label} constructor`, description.name, argument.constructor.name)
+        getMessage(`${label} constructor`, description.name, hasConstructor(argument) ? argument.constructor.name : argument)
       )
     }
   }
@@ -32,7 +42,7 @@ function argumentValidate(label, description, argument) {
   if (description instanceof Array) {
     if (!(argument instanceof Array)) {
       throw new UserArgumentInstanceError(
-        getMessage(`${label} constructor`, 'Array', argument.constructor.name)
+        getMessage(`${label} constructor`, 'Array', hasConstructor(argument) ? argument.constructor.name : argument)
       )
     }
     argument.forEach((_argument, _index) => {

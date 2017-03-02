@@ -67,6 +67,7 @@ describe('arguguard', () => {
       describeError(UserArgumentTypeError, 'Arguguard:User:ArgumentTypeError: myFunction() arguments[0] type should be "number", received "string"', () => {
         myFunction('1', myClass, [myClass, myClass])
       })
+
       describeError(UserArgumentTypeError, 'Arguguard:User:ArgumentTypeError: myFunction() arguments[0] type should be "number", received "boolean"', () => {
         myFunction(true, myClass, [myClass, myClass])
       })
@@ -78,6 +79,9 @@ describe('arguguard', () => {
       })
       describeError(UserArgumentInstanceError, 'Arguguard:User:ArgumentInstanceError: myFunction() arguments[2] constructor should be "Array", received "MyClass"', () => {
         myFunction(1, myClass, myClass)
+      })
+      describeError(UserArgumentInstanceError, 'Arguguard:User:ArgumentInstanceError: myFunction() arguments[2] constructor should be "Array", received "undefined"', () => {
+        myFunction(1, myClass, undefined)
       })
       describeError(UserArgumentInstanceError, 'Arguguard:User:ArgumentInstanceError: myFunction() arguments[2][1] constructor should be "MyClass", received "Function"', () => {
         myFunction(1, myClass, [myClass, MyClass])

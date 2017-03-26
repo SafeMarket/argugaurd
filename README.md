@@ -18,10 +18,10 @@ arguguard takes three arguments.
 
 1. A string label such as `myFunction()` that will be used in error reporting
 2. An array of descriptions. Each description can either be one of 4 things
-  1. A string (ex. `"number"` or `"boolean"`) in which a `typeof` check will be performed
-  2. A function (ex. `Array` or `MyClass`) in which case a `instanceof` check will be performed
-  3. A single-value array (ex. `["number"]` or `[MyClass]`) in which case a `typeof`/`instanceof` check will be
-  4. An instance of the `Validator` class (`require('arguguard/lib/Validator')`)
+    1. A string (ex. `"number"` or `"boolean"`) in which a `typeof` check will be performed
+    2. A function (ex. `Array` or `MyClass`) in which case a `instanceof` check will be performed
+    3. A single-value array (ex. `["number"]` or `[MyClass]`) in which case a `typeof`/`instanceof` check will be
+    4. An instance of the `Validator` class (`require('arguguard/lib/Validator')`)
 3. The arguments to test.
 
 ```js

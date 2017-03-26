@@ -14,7 +14,7 @@ $ npm i arguguard --save-dev
 
 arguguard takes three arguments.
 
-`arguguard(label, [description1, description2, ...], arguments)``
+`arguguard(label, [description1, description2, ...], arguments)`
 
 1. A string label such as `myFunction()` that will be used in error reporting
 2. An array of descriptions. Each description can either be one of 4 things

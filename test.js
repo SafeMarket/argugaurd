@@ -7,27 +7,33 @@ const ApiLabelTypeError = require('./errors/api/LabelType')
 const ApiDescriptionsInstanceError = require('./errors/api/DescriptionsInstance')
 const ApiArgsInstanceError = require('./errors/api/ArgsInstance')
 const ApiDescriptionError = require('./errors/api/Description')
+const ApiTestError = require('./errors/api/Test')
 const ApiArrayDescriptionLengthError = require('./errors/api/ArrayDescriptionLength')
 
 const UserArgumentsLengthError = require('./errors/user/ArgumentsLength')
 const UserArgumentTypeError = require('./errors/user/ArgumentType')
 const UserArgumentInstanceError = require('./errors/user/ArgumentInstance')
+const UserArgumentValidationError = require('./errors/user/ArgumentValidation')
+
+const Validator = require('./lib/Validator')
 
 const chai = require('chai')
 
 const A = function A() {}
 const a = new A()
 
-const B = function B() {}
-const b = new B()
+
+const aboveThreeValidator = new Validator('above 3', (number) => {
+  return number > 3
+})
 
 chai.should()
 
 function MyClass() {}
 const myClass = new MyClass()
 
-function myFunction(myNumber, myClass) {
-  arguguard('myFunction()', ['number', MyClass, [MyClass]], arguments)
+function myFunction() {
+  arguguard('myFunction()', ['number', MyClass, [MyClass], aboveThreeValidator], arguments)
 }
 
 function callback() {}
@@ -38,17 +44,26 @@ describe('arguguard', () => {
       describeError(ApiArgumentsLengthError, 'Arguguard:Api:ArgumentsLengthError: arguguard() arguments.length should be "3", received "2"', () => {
         arguguard([], arguments)
       })
+      describeError(ApiArgumentsLengthError, 'Arguguard:Api:ArgumentsLengthError: Validator() arguments.length should be "2", received "1"', () => {
+        new Validator(() => {})
+      })
       describeError(ApiLabelTypeError, 'Arguguard:Api:LabelTypeError: arguguard() arguments[0] (label) should be "string", received "object"', () => {
         arguguard({}, [], arguments)
       })
       describeError(ApiDescriptionsInstanceError, 'Arguguard:Api:DescriptionsInstanceError: arguguard() arguments[1] (description) should be "Array", received "Object"', () => {
         arguguard('myFunction', {}, arguments)
       })
-      describeError(ApiDescriptionError, 'Arguguard:Api:DescriptionError: arguguard() descriptions[0] should be "string/function/Array", received "boolean"', () => {
+      describeError(ApiDescriptionError, 'Arguguard:Api:DescriptionError: arguguard() descriptions[0] should be "string/function/Array/Validator", received "boolean"', () => {
         arguguard('myFunction', [true], true)
       })
-      describeError(ApiDescriptionError, 'Arguguard:Api:DescriptionError: arguguard() descriptions[1] should be "string/function/Array", received "boolean"', () => {
+      describeError(ApiDescriptionError, 'Arguguard:Api:DescriptionError: arguguard() descriptions[1] should be "string/function/Array/Validator", received "boolean"', () => {
         arguguard('myFunction', ['number', true], true)
+      })
+      describeError(ApiDescriptionError, 'Arguguard:Api:DescriptionError: Validator() arguments[0] (description) should be "string", received "boolean"', () => {
+        new Validator(true, true)
+      })
+      describeError(ApiTestError, 'Arguguard:Api:TestError: Validator() arguments[1] (test) should be "function", received "boolean"', () => {
+        new Validator('above 3', true)
       })
       describeError(ApiArrayDescriptionLengthError, 'Arguguard:Api:ArrayDescriptionLength: arguguard() descriptions[2] length should be "1", received "0"', () => {
         arguguard('myFunction', ['number', MyClass, []], true)
@@ -58,45 +73,51 @@ describe('arguguard', () => {
       })
     })
     describe('user', () => {
-      describeError(UserArgumentsLengthError, 'Arguguard:User:ArgumentsLengthError: myFunction() arguments.length should be "3", received "0"', () => {
+      describeError(UserArgumentsLengthError, 'Arguguard:User:ArgumentsLengthError: myFunction() arguments.length should be "4", received "0"', () => {
         myFunction()
       })
-      describeError(UserArgumentsLengthError, 'Arguguard:User:ArgumentsLengthError: myFunction() arguments.length should be "3", received "4"', () => {
-        myFunction(1, myClass, [myClass, myClass], callback)
+      describeError(UserArgumentsLengthError, 'Arguguard:User:ArgumentsLengthError: myFunction() arguments.length should be "4", received "5"', () => {
+        myFunction(1, myClass, [myClass, myClass], 4, callback)
       })
       describeError(UserArgumentTypeError, 'Arguguard:User:ArgumentTypeError: myFunction() arguments[0] type should be "number", received "string"', () => {
-        myFunction('1', myClass, [myClass, myClass])
+        myFunction('1', myClass, [myClass, myClass], 4)
       })
 
       describeError(UserArgumentTypeError, 'Arguguard:User:ArgumentTypeError: myFunction() arguments[0] type should be "number", received "boolean"', () => {
-        myFunction(true, myClass, [myClass, myClass])
+        myFunction(true, myClass, [myClass, myClass], 4)
       })
       describeError(UserArgumentInstanceError, 'Arguguard:User:ArgumentInstanceError: myFunction() arguments[1] constructor should be "MyClass", received "Object"', () => {
-        myFunction(1, {}, [myClass, myClass])
+        myFunction(1, {}, [myClass, myClass], 4)
       })
       describeError(UserArgumentInstanceError, 'Arguguard:User:ArgumentInstanceError: myFunction() arguments[1] constructor should be "MyClass", received "Function"', () => {
-        myFunction(1, MyClass, [myClass, myClass])
+        myFunction(1, MyClass, [myClass, myClass], 4)
       })
       describeError(UserArgumentInstanceError, 'Arguguard:User:ArgumentInstanceError: myFunction() arguments[2] constructor should be "Array", received "MyClass"', () => {
-        myFunction(1, myClass, myClass)
+        myFunction(1, myClass, myClass, 4)
       })
       describeError(UserArgumentInstanceError, 'Arguguard:User:ArgumentInstanceError: myFunction() arguments[2] constructor should be "Array", received "undefined"', () => {
-        myFunction(1, myClass, undefined)
+        myFunction(1, myClass, undefined, 4)
       })
       describeError(UserArgumentInstanceError, 'Arguguard:User:ArgumentInstanceError: myFunction() arguments[2][1] constructor should be "MyClass", received "Function"', () => {
-        myFunction(1, myClass, [myClass, MyClass])
+        myFunction(1, myClass, [myClass, MyClass], 4)
+      })
+      describeError(UserArgumentInstanceError, 'Arguguard:User:ArgumentInstanceError: myFunction() arguments[2][1] constructor should be "MyClass", received "Function"', () => {
+        myFunction(1, myClass, [myClass, MyClass], 4)
+      })
+      describeError(UserArgumentValidationError, 'Arguguard:User:ArgumentValidationError: myFunction() arguments[3] should be "above 3", received "3"', () => {
+        myFunction(1, myClass, [myClass, myClass], 3)
       })
     })
   })
   describe('success', () => {
-    it('should pass with myFunction(1, myClass, [myClass, myClass])', () => {
-      myFunction(1, myClass, [myClass, myClass])
+    it('should pass with myFunction(1, myClass, [myClass, myClass], 4)', () => {
+      myFunction(1, myClass, [myClass, myClass], 4)
     })
     it('should pass with A:a, number:1, Array:[], object:[], Object:{}, object:{}, Error:error', () => {
       arguguard(
         'success',
         [A, 'number', Array, 'object', Object, 'object', Error],
-        [a, 1, [], [], {}, {}, new Error]
+        [a, 1, [], [], {}, {}, new Error()]
       )
     })
   })

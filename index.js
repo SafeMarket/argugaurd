@@ -8,10 +8,10 @@ const ApiArrayDescriptionLengthError = require('./errors/api/ArrayDescriptionLen
 const UserArgumentsLengthError = require('./errors/user/ArgumentsLength')
 const UserArgumentTypeError = require('./errors/user/ArgumentType')
 const UserArgumentInstanceError = require('./errors/user/ArgumentInstance')
+const UserArgumentValidationError = require('./errors/user/ArgumentValidation')
 
-function getMessage(label, expects, actual) {
-  return `${label} should be "${expects}", received "${actual}"`
-}
+const Validator = require('./lib/Validator')
+const getMessage = require('./lib/getMessage')
 
 function hasConstructor(thing) {
   try {
@@ -24,22 +24,23 @@ function hasConstructor(thing) {
 }
 
 function argumentValidate(label, description, argument) {
-  if (typeof description === 'string') {
+
+  if (description instanceof Validator) {
+    if (!description.test(argument)) {
+      throw new UserArgumentValidationError(getMessage(label, description.description, argument))
+    }
+  } else if (typeof description === 'string') {
     // eslint-disable-next-line valid-typeof
     if (typeof argument !== description) {
       throw new UserArgumentTypeError(getMessage(`${label} type`, description, typeof argument))
     }
-  }
-
-  if (typeof description === 'function') {
+  } else if (typeof description === 'function') {
     if (!(argument instanceof description)) {
       throw new UserArgumentInstanceError(
         getMessage(`${label} constructor`, description.name, hasConstructor(argument) ? argument.constructor.name : argument)
       )
     }
-  }
-
-  if (description instanceof Array) {
+  } else if (description instanceof Array) {
     if (!(argument instanceof Array)) {
       throw new UserArgumentInstanceError(
         getMessage(`${label} constructor`, 'Array', hasConstructor(argument) ? argument.constructor.name : argument)
@@ -81,6 +82,9 @@ function apiValidate(label, descriptions, args) {
 }
 
 function apiDescriptionValidate(label, description) {
+  if (description instanceof Validator) {
+    return
+  }
   if (typeof description === 'string') {
     return
   }
@@ -94,6 +98,6 @@ function apiDescriptionValidate(label, description) {
     apiDescriptionValidate(`${label}[0]`, description[0])
     return
   }
-  throw new ApiDescriptionError(getMessage(label, 'string/function/Array', typeof description))
+  throw new ApiDescriptionError(getMessage(label, 'string/function/Array/Validator', typeof description))
 
 }

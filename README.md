@@ -17,38 +17,44 @@ arguguard takes three arguments.
 `arguguard(label, [description1, description2, ...], arguments)``
 
 1. A string label such as `myFunction()` that will be used in error reporting
-2. An array of descriptions. Each description can either be one of 3 things
+2. An array of descriptions. Each description can either be one of 4 things
   1. A string (ex. `"number"` or `"boolean"`) in which a `typeof` check will be performed
   2. A function (ex. `Array` or `MyClass`) in which case a `instanceof` check will be performed
-  3. A single-value array (ex. `["number"]` or `[MyClass]`) in which case a `typeof`/`instanceof` check will be performed on each element of the array
+  3. A single-value array (ex. `["number"]` or `[MyClass]`) in which case a `typeof`/`instanceof` check will be
+  4. An instance of the `Validator` class (`require('arguguard/lib/Validator')`)
 3. The arguments to test.
 
 ```js
 var arguguard = require('arguguard')
+var Validator = require('arguguard/lib/Validator')
+var aboveThreeValidator = new Validator('above 3', (number) => { return number > 3 })
 
-function myFunction(myNumber, myClass, arrayofMyClass) {
-  arguguard('myFunction()', ['number', MyClass, [MyClass]], arguments)
+function myFunction(myNumber, myClass, arrayofMyClass, myBigNumber) {
+  arguguard('myFunction()', ['number', MyClass, [MyClass], aboveThreeValidator], arguments)
 }
 
 myFunction()
->> Arguguard:User:ArgumentsLengthError: myFunction() arguments.length should be "3", received "0"
+>> Arguguard:User:ArgumentsLengthError: myFunction() arguments.length should be "4", received "0"
 
-myFunction(1, myClass, [myClass, myClass], callback)
->> Arguguard:User:ArgumentsLengthError: myFunction() arguments.length should be "3", received "4"
+myFunction(1, myClass, [myClass, myClass], 4, callback)
+>> Arguguard:User:ArgumentsLengthError: myFunction() arguments.length should be "4", received "5"
 
-myFunction('1', myClass, [myClass, myClass])
+myFunction('1', myClass, [myClass, myClass], 4)
 >> Arguguard:User:ArgumentTypeError: myFunction() arguments[0] type should be "number", received "string"
 
-myFunction(1, {}, [myClass, myClass])
+myFunction(1, {}, [myClass, myClass], 4)
 >> Arguguard:User:ArgumentInstanceError: myFunction() arguments[1] constructor should be "MyClass", received "Object"
 
-myFunction(1, myClass, myClass)
+myFunction(1, myClass, myClass, 4)
 >> Arguguard:User:ArgumentInstanceError: myFunction() arguments[2] constructor should be "Array", received "MyClass"
 
-myFunction(1, myClass, [myClass, MyClass])
+myFunction(1, myClass, [myClass, MyClass], 4)
 >> Arguguard:User:ArgumentInstanceError: myFunction() arguments[2][1] constructor should be "MyClass", received "Function"
 
-myFunction(1, new MyClass())
+myFunction(1, myClass, [myClass, myClass], 3)
+>> Arguguard:User:ArgumentValidationError: myFunction() arguments[3] should be "above 3", received "3"
+
+myFunction(1, myClass, [myClass, myClass], 4)
 >> ✓
 ```
 

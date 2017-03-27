@@ -27,7 +27,7 @@ arguguard takes three arguments.
 ```js
 var arguguard = require('arguguard')
 var Validator = require('arguguard/lib/Validator')
-var aboveThreeValidator = new Validator('above 3', (number) => { return number > 3 })
+var aboveThreeValidator = new Validator('AboveThree', (number) => { return number > 3 })
 
 function myFunction(myNumber, myClass, arrayofMyClass, myBigNumber) {
   arguguard('myFunction()', ['number', MyClass, [MyClass], aboveThreeValidator], arguments)
@@ -52,7 +52,7 @@ myFunction(1, myClass, [myClass, MyClass], 4)
 >> Arguguard:User:ArgumentInstanceError: myFunction() arguments[2][1] constructor should be "MyClass", received "Function"
 
 myFunction(1, myClass, [myClass, myClass], 3)
->> Arguguard:User:ArgumentValidationError: myFunction() arguments[3] should be "above 3", received "3"
+>> Arguguard:User:ValidationError:AboveThree: myFunction() arguments[3] should be "above 3", received "3"
 
 myFunction(1, myClass, [myClass, myClass], 4)
 >> ✓

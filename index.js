@@ -8,7 +8,6 @@ const ApiArrayDescriptionLengthError = require('./errors/api/ArrayDescriptionLen
 const UserArgumentsLengthError = require('./errors/user/ArgumentsLength')
 const UserArgumentTypeError = require('./errors/user/ArgumentType')
 const UserArgumentInstanceError = require('./errors/user/ArgumentInstance')
-const UserArgumentValidationError = require('./errors/user/ArgumentValidation')
 
 const Validator = require('./lib/Validator')
 const getMessage = require('./lib/getMessage')
@@ -29,7 +28,7 @@ function argumentValidate(label, description, argument) {
     try {
       description.test(argument)
     } catch (err) {
-      throw new UserArgumentValidationError(`${label} ${err.message}`)
+      throw new description.Error(`${label} ${err.message}`)
     }
   } else if (typeof description === 'string') {
     // eslint-disable-next-line valid-typeof

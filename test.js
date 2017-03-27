@@ -13,7 +13,6 @@ const ApiArrayDescriptionLengthError = require('./errors/api/ArrayDescriptionLen
 const UserArgumentsLengthError = require('./errors/user/ArgumentsLength')
 const UserArgumentTypeError = require('./errors/user/ArgumentType')
 const UserArgumentInstanceError = require('./errors/user/ArgumentInstance')
-const UserArgumentValidationError = require('./errors/user/ArgumentValidation')
 
 const Validator = require('./lib/Validator')
 
@@ -23,7 +22,7 @@ const A = function A() {}
 const a = new A()
 
 
-const aboveThreeValidator = new Validator('above 3', (arg) => {
+const aboveThreeValidator = new Validator('AboveThree', (arg) => {
   if (typeof arg !== 'number') {
     throw new Error(`should be a number, received "${typeof arg}"`)
   }
@@ -64,7 +63,7 @@ describe('arguguard', () => {
       describeError(ApiDescriptionError, 'Arguguard:Api:DescriptionError: arguguard() descriptions[1] should be "string/function/Array/Validator", received "boolean"', () => {
         arguguard('myFunction', ['number', true], true)
       })
-      describeError(ApiDescriptionError, 'Arguguard:Api:DescriptionError: Validator() arguments[0] (description) should be "string", received "boolean"', () => {
+      describeError(ApiDescriptionError, 'Arguguard:Api:DescriptionError: Validator() arguments[0] (name) should be "string", received "boolean"', () => {
         new Validator(true, true)
       })
       describeError(ApiTestError, 'Arguguard:Api:TestError: Validator() arguments[1] (test) should be "function", received "boolean"', () => {
@@ -109,10 +108,10 @@ describe('arguguard', () => {
       describeError(UserArgumentInstanceError, 'Arguguard:User:ArgumentInstanceError: myFunction() arguments[2][1] constructor should be "MyClass", received "Function"', () => {
         myFunction(1, myClass, [myClass, MyClass], 4)
       })
-      describeError(UserArgumentValidationError, 'Arguguard:User:ArgumentValidationError: myFunction() arguments[3] should be a number, received "string"', () => {
+      describeError(aboveThreeValidator.Error, 'AboveThreeValidationError: myFunction() arguments[3] should be a number, received "string"', () => {
         myFunction(1, myClass, [myClass, myClass], '4')
       })
-      describeError(UserArgumentValidationError, 'Arguguard:User:ArgumentValidationError: myFunction() arguments[3] should be greater than 3, received 3', () => {
+      describeError(aboveThreeValidator.Error, 'AboveThreeValidationError: myFunction() arguments[3] should be greater than 3, received 3', () => {
         myFunction(1, myClass, [myClass, myClass], 3)
       })
     })

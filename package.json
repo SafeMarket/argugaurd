@@ -1,6 +1,6 @@
 {
   "name": "arguguard",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Strict argument validation with testable errors",
   "main": "index.js",
   "scripts": {

@@ -23,8 +23,13 @@ const A = function A() {}
 const a = new A()
 
 
-const aboveThreeValidator = new Validator('above 3', (number) => {
-  return number > 3
+const aboveThreeValidator = new Validator('above 3', (arg) => {
+  if (typeof arg !== 'number') {
+    throw new Error(`should be a number, received "${typeof arg}"`)
+  }
+  if (arg <= 3) {
+    throw new Error(`should be greater than 3, received ${arg}`)
+  }
 })
 
 chai.should()
@@ -104,7 +109,10 @@ describe('arguguard', () => {
       describeError(UserArgumentInstanceError, 'Arguguard:User:ArgumentInstanceError: myFunction() arguments[2][1] constructor should be "MyClass", received "Function"', () => {
         myFunction(1, myClass, [myClass, MyClass], 4)
       })
-      describeError(UserArgumentValidationError, 'Arguguard:User:ArgumentValidationError: myFunction() arguments[3] should be "above 3", received "3"', () => {
+      describeError(UserArgumentValidationError, 'Arguguard:User:ArgumentValidationError: myFunction() arguments[3] should be a number, received "string"', () => {
+        myFunction(1, myClass, [myClass, myClass], '4')
+      })
+      describeError(UserArgumentValidationError, 'Arguguard:User:ArgumentValidationError: myFunction() arguments[3] should be greater than 3, received 3', () => {
         myFunction(1, myClass, [myClass, myClass], 3)
       })
     })

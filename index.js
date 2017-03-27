@@ -26,8 +26,10 @@ function hasConstructor(thing) {
 function argumentValidate(label, description, argument) {
 
   if (description instanceof Validator) {
-    if (!description.test(argument)) {
-      throw new UserArgumentValidationError(getMessage(label, description.description, argument))
+    try {
+      description.test(argument)
+    } catch (err) {
+      throw new UserArgumentValidationError(`${label} ${err.message}`)
     }
   } else if (typeof description === 'string') {
     // eslint-disable-next-line valid-typeof

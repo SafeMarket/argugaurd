@@ -120,6 +120,11 @@ describe('arguguard', () => {
     it('should pass with myFunction(1, myClass, [myClass, myClass], 4)', () => {
       myFunction(1, myClass, [myClass, myClass], 4)
     })
+    it('should pass with myFunction(1, fakeMyClass, [fakeMyClass, fakeMyClass], 4)', () => {
+      const FakeMyClass = function MyClass(){}
+      const fakeMyClass = new FakeMyClass()
+      myFunction(1, fakeMyClass, [fakeMyClass, fakeMyClass], 4)
+    })
     it('should pass with A:a, number:1, Array:[], object:[], Object:{}, object:{}, Error:error', () => {
       arguguard(
         'success',

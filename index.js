@@ -36,10 +36,10 @@ function argumentValidate(label, description, argument) {
       throw new UserArgumentTypeError(getMessage(`${label} type`, description, typeof argument))
     }
   } else if (typeof description === 'function') {
-    if (!(argument instanceof description)) {
-      throw new UserArgumentInstanceError(
-        getMessage(`${label} constructor`, description.name, hasConstructor(argument) ? argument.constructor.name : argument)
-      )
+    if (!hasConstructor(argument)) {
+      throw new UserArgumentInstanceError(getMessage(`${label} constructor`, description.name, argument))
+    } else if (description.name !== argument.constructor.name) {
+      throw new UserArgumentInstanceError(getMessage(`${label} constructor`, description.name, argument.constructor.name))
     }
   } else if (description instanceof Array) {
     if (!(argument instanceof Array)) {

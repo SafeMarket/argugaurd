@@ -36,6 +36,13 @@ chai.should()
 const MyClass = function MyClass() {}
 const myClass = new MyClass()
 
+const MySubClass = function MySubClass() {
+  MyClass.call(this)
+}
+MySubClass.prototype = Object.create(MyClass.prototype)
+MySubClass.prototype.constructor = MySubClass
+const mySubClass = new MySubClass()
+
 const FakeMyClass = function MyClass() {}
 const fakeMyClass = new FakeMyClass()
 
@@ -129,9 +136,18 @@ describe('arguguard', () => {
     it('should pass with myFunction(1, myClass, [myClass, myClass], 4)', () => {
       myFunction(1, myClass, [myClass, myClass], 4)
     })
-    it('should pass with myFunction(1, fakeMyClass, [fakeMyClass, fakeMyClass], 4)', () => {
+    it('should pass with myFunction(1, mySubClass, [mySubClass, mySubClass], 4)', () => {
+      myFunction(1, mySubClass, [mySubClass, mySubClass], 4)
+    })
+    it('(allowSynonymousConstructors) should pass with myFunction(1, mySubClass, [mySubClass, mySubClass], 4)', () => {
+      arguguard.options.allowSynonymousConstructors = true
+      myFunction(1, mySubClass, [mySubClass, mySubClass], 4)
+      arguguard.options.allowSynonymousConstructors = false
+    })
+    it('(allowSynonymousConstructors) should pass with myFunction(1, fakeMyClass, [fakeMyClass, fakeMyClass], 4)', () => {
       arguguard.options.allowSynonymousConstructors = true
       myFunction(1, fakeMyClass, [fakeMyClass, fakeMyClass], 4)
+      arguguard.options.allowSynonymousConstructors = false
     })
     it('should pass with A:a, number:1, Array:[], object:[], Object:{}, object:{}, Error:error', () => {
       arguguard(

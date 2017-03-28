@@ -23,7 +23,6 @@ function hasConstructor(thing) {
 }
 
 function argumentValidate(label, description, argument) {
-
   if (description instanceof Validator) {
     try {
       description.test(argument)
@@ -38,15 +37,14 @@ function argumentValidate(label, description, argument) {
   } else if (typeof description === 'function') {
     if (!hasConstructor(argument)) {
       throw new UserArgumentInstanceError(getMessage(`${label} constructor`, description.name, argument))
-    } else if (arguguard.options.allowSynonymousConstructors) {
-      if (description.name !== argument.constructor.name) {
-        throw new UserArgumentInstanceError(getMessage(`${label} constructor`, description.name, argument.constructor.name))
-      }
-    } else {
-      if (!(argument instanceof description)) {
-        throw new UserArgumentInstanceError(getMessage(`${label} constructor`, description.name, argument.constructor.name))
-      }
+    } else if (argument instanceof description) {
+      return
+    } else if (arguguard.options.allowSynonymousConstructors === true
+      && description.name === argument.constructor.name
+    ) {
+      return
     }
+    throw new UserArgumentInstanceError(getMessage(`${label} constructor`, description.name, argument.constructor.name))
   } else if (description instanceof Array) {
     if (!(argument instanceof Array)) {
       throw new UserArgumentInstanceError(
@@ -58,7 +56,6 @@ function argumentValidate(label, description, argument) {
     })
   }
 }
-
 
 const arguguard = function arguguard(label, descriptions, args) {
   if (arguguard.options.disabled === true) {

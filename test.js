@@ -130,7 +130,7 @@ describe('arguguard', () => {
       myFunction(1, myClass, [myClass, myClass], 4)
     })
     it('should pass with myFunction(1, fakeMyClass, [fakeMyClass, fakeMyClass], 4)', () => {
-      arguguard.allowSynonymousConstructors = true
+      arguguard.options.allowSynonymousConstructors = true
       myFunction(1, fakeMyClass, [fakeMyClass, fakeMyClass], 4)
     })
     it('should pass with A:a, number:1, Array:[], object:[], Object:{}, object:{}, Error:error', () => {
@@ -153,5 +153,12 @@ function describeError(ErrorClass, message, func) {
     it(`should have message "${message}"`, () => {
       err.message.should.equal(message)
     })
+    if (ErrorClass.name.indexOf(':User:') >= 0) {
+      it('should NOT throw when arguguard is disabled', () => {
+        arguguard.options.disabled = true
+        func()
+        arguguard.options.disabled = false
+      })
+    }
   })
 }

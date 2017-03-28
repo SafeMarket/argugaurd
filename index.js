@@ -38,7 +38,7 @@ function argumentValidate(label, description, argument) {
   } else if (typeof description === 'function') {
     if (!hasConstructor(argument)) {
       throw new UserArgumentInstanceError(getMessage(`${label} constructor`, description.name, argument))
-    } else if (arguguard.allowSynonymousConstructors) {
+    } else if (arguguard.options.allowSynonymousConstructors) {
       if (description.name !== argument.constructor.name) {
         throw new UserArgumentInstanceError(getMessage(`${label} constructor`, description.name, argument.constructor.name))
       }
@@ -61,7 +61,7 @@ function argumentValidate(label, description, argument) {
 
 
 const arguguard = function arguguard(label, descriptions, args) {
-  if (arguguard.disabled === true) {
+  if (arguguard.options.disabled === true) {
     return
   }
   apiValidate(...arguments)
@@ -73,8 +73,10 @@ const arguguard = function arguguard(label, descriptions, args) {
   })
 }
 
-arguguard.allowSynonymousConstructors = false
-arguguard.disabled = false
+arguguard.options = {
+  disabled: false,
+  allowSynonymousConstructors: false
+}
 
 module.exports = arguguard
 

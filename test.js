@@ -33,8 +33,11 @@ const aboveThreeValidator = new Validator('AboveThree', (arg) => {
 
 chai.should()
 
-function MyClass() {}
+const MyClass = function MyClass() {}
 const myClass = new MyClass()
+
+const FakeMyClass = function MyClass() {}
+const fakeMyClass = new FakeMyClass()
 
 function myFunction() {
   arguguard('myFunction()', ['number', MyClass, [MyClass], aboveThreeValidator], arguments)
@@ -108,6 +111,12 @@ describe('arguguard', () => {
       describeError(UserArgumentInstanceError, 'Arguguard:User:ArgumentInstanceError: myFunction() arguments[2][1] constructor should be "MyClass", received "Function"', () => {
         myFunction(1, myClass, [myClass, MyClass], 4)
       })
+      describeError(UserArgumentInstanceError, 'Arguguard:User:ArgumentInstanceError: myFunction() arguments[2][1] constructor should be "MyClass", received "Function"', () => {
+        myFunction(1, myClass, [myClass, MyClass], 4)
+      })
+      describeError(UserArgumentInstanceError, 'Arguguard:User:ArgumentInstanceError: myFunction() arguments[2][1] constructor should be "MyClass", received "MyClass"', () => {
+        myFunction(1, myClass, [myClass, fakeMyClass], 4)
+      })
       describeError(aboveThreeValidator.Error, 'Arguguard:User:ValidationError:AboveThree: myFunction() arguments[3] should be a number, received "string"', () => {
         myFunction(1, myClass, [myClass, myClass], '4')
       })
@@ -121,8 +130,7 @@ describe('arguguard', () => {
       myFunction(1, myClass, [myClass, myClass], 4)
     })
     it('should pass with myFunction(1, fakeMyClass, [fakeMyClass, fakeMyClass], 4)', () => {
-      const FakeMyClass = function MyClass(){}
-      const fakeMyClass = new FakeMyClass()
+      arguguard.allowSynonymousConstructors = true
       myFunction(1, fakeMyClass, [fakeMyClass, fakeMyClass], 4)
     })
     it('should pass with A:a, number:1, Array:[], object:[], Object:{}, object:{}, Error:error', () => {

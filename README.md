@@ -70,6 +70,18 @@ arguguard('myFunction()', ['number', MyClass, [MyClass]], arguments)
 >> ✓
 ```
 
+### Settings
+
+#### Disable (Get a speed boost)
+```js
+arguguard.disabled = true
+```
+
+#### Allow for Synonymous Constructors (such as when you have two versions of a dependency)
+```js
+arguguard.allowSynonymousConstructors = true
+```
+
 ## Running tests
 
 Install dev dependencies:

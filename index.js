@@ -38,8 +38,14 @@ function argumentValidate(label, description, argument) {
   } else if (typeof description === 'function') {
     if (!hasConstructor(argument)) {
       throw new UserArgumentInstanceError(getMessage(`${label} constructor`, description.name, argument))
-    } else if (description.name !== argument.constructor.name) {
-      throw new UserArgumentInstanceError(getMessage(`${label} constructor`, description.name, argument.constructor.name))
+    } else if (arguguard.allowSynonymousConstructors) {
+      if (description.name !== argument.constructor.name) {
+        throw new UserArgumentInstanceError(getMessage(`${label} constructor`, description.name, argument.constructor.name))
+      }
+    } else {
+      if (!(argument instanceof description)) {
+        throw new UserArgumentInstanceError(getMessage(`${label} constructor`, description.name, argument.constructor.name))
+      }
     }
   } else if (description instanceof Array) {
     if (!(argument instanceof Array)) {
@@ -54,7 +60,10 @@ function argumentValidate(label, description, argument) {
 }
 
 
-module.exports = function arguguard(label, descriptions, args) {
+const arguguard = function arguguard(label, descriptions, args) {
+  if (arguguard.disabled === true) {
+    return
+  }
   apiValidate(...arguments)
   if (args.length !== descriptions.length) {
     throw new UserArgumentsLengthError(getMessage(`${label} arguments.length`, descriptions.length, args.length))
@@ -63,6 +72,11 @@ module.exports = function arguguard(label, descriptions, args) {
     argumentValidate(`${label} arguments[${index}]`, description, args[index])
   })
 }
+
+arguguard.allowSynonymousConstructors = false
+arguguard.disabled = false
+
+module.exports = arguguard
 
 function apiValidate(label, descriptions, args) {
   if (arguments.length !== 3) {

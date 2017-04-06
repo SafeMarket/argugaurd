@@ -122,7 +122,9 @@ describe('arguguard', () => {
         myFunction(1, myClass, [myClass, MyClass], 4)
       })
       describeError(UserArgumentInstanceError, 'Arguguard:User:ArgumentInstanceError: myFunction() arguments[2][1] constructor should be "MyClass", received "MyClass"', () => {
+        arguguard.options.allowSynonymousConstructors = false
         myFunction(1, myClass, [myClass, fakeMyClass], 4)
+        arguguard.options.allowSynonymousConstructors = true
       })
       describeError(aboveThreeValidator.Error, 'Arguguard:User:ValidationError:AboveThree: myFunction() arguments[3] should be a number, received "string"', () => {
         myFunction(1, myClass, [myClass, myClass], '4')

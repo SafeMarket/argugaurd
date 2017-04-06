@@ -72,7 +72,7 @@ const arguguard = function arguguard(label, descriptions, args) {
 
 arguguard.options = {
   disabled: false,
-  allowSynonymousConstructors: false
+  allowSynonymousConstructors: true
 }
 
 module.exports = arguguard

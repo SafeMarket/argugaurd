@@ -62,8 +62,8 @@ const arguguard = function arguguard(label, descriptions, args) {
     return
   }
   apiValidate(...arguments)
-  if (args.length !== descriptions.length) {
-    throw new UserArgumentsLengthError(getMessage(`${label} arguments.length`, descriptions.length, args.length))
+  if (args.length > descriptions.length) {
+    throw new UserArgumentsLengthError(getMessage(`${label} arguments.length`, `no more than ${descriptions.length}`, args.length))
   }
   descriptions.forEach((description, index) => {
     argumentValidate(`${label} arguments[${index}]`, description, args[index])

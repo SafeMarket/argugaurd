@@ -87,10 +87,10 @@ describe('arguguard', () => {
       })
     })
     describe('user', () => {
-      describeError(UserArgumentsLengthError, 'Arguguard:User:ArgumentsLengthError: myFunction() arguments.length should be "4", received "0"', () => {
+      describeError(UserArgumentTypeError, 'Arguguard:User:ArgumentTypeError: myFunction() arguments[0] type should be "number", received "undefined"', () => {
         myFunction()
       })
-      describeError(UserArgumentsLengthError, 'Arguguard:User:ArgumentsLengthError: myFunction() arguments.length should be "4", received "5"', () => {
+      describeError(UserArgumentsLengthError, 'Arguguard:User:ArgumentsLengthError: myFunction() arguments.length should be "no more than 4", received "5"', () => {
         myFunction(1, myClass, [myClass, myClass], 4, callback)
       })
       describeError(UserArgumentTypeError, 'Arguguard:User:ArgumentTypeError: myFunction() arguments[0] type should be "number", received "string"', () => {

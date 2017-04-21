@@ -18,9 +18,9 @@ arguguard takes three arguments.
 
 1. A string label such as `myFunction()` that will be used in error reporting
 2. An array of descriptions. Each description can either be one of 4 things
-    1. A string (ex. `"number"` or `"boolean"`) in which a `typeof` check will be performed
-    2. A function (ex. `Array` or `MyClass`) in which case a `instanceof` check will be performed
-    3. A single-value array (ex. `["number"]` or `[MyClass]`) in which case a `typeof`/`instanceof` check will be
+    1. A lower case string (ex. `"number"` or `"boolean"`) in which a `typeof` check will be performed
+    2. An upper case string (ex. `"Object"` or `"MyClass"`) in which a `instanceof` check will be performed
+    3. An `[]` (ex. `"[]number"` or `"[]MyClass"`) in which case the top level argument must be an array, and every instance of that array must pass either a `typeof` or `instanceof` check
     4. An instance of the `Validator` class (`require('arguguard/lib/Validator')`)
 3. The arguments to test.
 
@@ -30,7 +30,7 @@ var Validator = require('arguguard/lib/Validator')
 var aboveThreeValidator = new Validator('AboveThree', (number) => { return number > 3 })
 
 function myFunction(myNumber, myClass, arrayofMyClass, myBigNumber) {
-  arguguard('myFunction()', ['number', MyClass, [MyClass], aboveThreeValidator], arguments)
+  arguguard('myFunction()', ['number', 'MyClass', '[]MyClass', aboveThreeValidator], arguments)
 }
 
 myFunction()

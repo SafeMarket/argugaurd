@@ -36,18 +36,11 @@ chai.should()
 const MyClass = function MyClass() {}
 const myClass = new MyClass()
 
-const MySubClass = function MySubClass() {
-  MyClass.call(this)
-}
-MySubClass.prototype = Object.create(MyClass.prototype)
-MySubClass.prototype.constructor = MySubClass
-const mySubClass = new MySubClass()
-
 const FakeMyClass = function MyClass() {}
 const fakeMyClass = new FakeMyClass()
 
 function myFunction() {
-  arguguard('myFunction()', ['number', MyClass, [MyClass], aboveThreeValidator], arguments)
+  arguguard('myFunction()', ['number', 'MyClass', '[]MyClass', aboveThreeValidator], arguments)
 }
 
 function callback() {}
@@ -67,10 +60,10 @@ describe('arguguard', () => {
       describeError(ApiDescriptionsInstanceError, 'Arguguard:Api:DescriptionsInstanceError: arguguard() arguments[1] (description) should be "Array", received "Object"', () => {
         arguguard('myFunction', {}, arguments)
       })
-      describeError(ApiDescriptionError, 'Arguguard:Api:DescriptionError: arguguard() descriptions[0] should be "string/function/Array/Validator", received "boolean"', () => {
+      describeError(ApiDescriptionError, 'Arguguard:Api:DescriptionError: arguguard() descriptions[0] should be "string/Validator", received "boolean"', () => {
         arguguard('myFunction', [true], true)
       })
-      describeError(ApiDescriptionError, 'Arguguard:Api:DescriptionError: arguguard() descriptions[1] should be "string/function/Array/Validator", received "boolean"', () => {
+      describeError(ApiDescriptionError, 'Arguguard:Api:DescriptionError: arguguard() descriptions[1] should be "string/Validator", received "boolean"', () => {
         arguguard('myFunction', ['number', true], true)
       })
       describeError(ApiDescriptionError, 'Arguguard:Api:DescriptionError: Validator() arguments[0] (name) should be "string", received "boolean"', () => {
@@ -79,11 +72,8 @@ describe('arguguard', () => {
       describeError(ApiTestError, 'Arguguard:Api:TestError: Validator() arguments[1] (test) should be "function", received "boolean"', () => {
         new Validator('above 3', true)
       })
-      describeError(ApiArrayDescriptionLengthError, 'Arguguard:Api:ArrayDescriptionLength: arguguard() descriptions[2] length should be "1", received "0"', () => {
-        arguguard('myFunction', ['number', MyClass, []], true)
-      })
       describeError(ApiArgsInstanceError, 'Arguguard:Api:ArgsInstanceError: arguguard() arguments[2] (args) should be "Object", received "Boolean"', () => {
-        arguguard('myFunction', ['number', MyClass, [MyClass]], true)
+        arguguard('myFunction', ['number', 'MyClass', '[]MyClass'], true)
       })
     })
     describe('user', () => {
@@ -121,11 +111,6 @@ describe('arguguard', () => {
       describeError(UserArgumentInstanceError, 'Arguguard:User:ArgumentInstanceError: myFunction() arguments[2][1] constructor should be "MyClass", received "Function"', () => {
         myFunction(1, myClass, [myClass, MyClass], 4)
       })
-      describeError(UserArgumentInstanceError, 'Arguguard:User:ArgumentInstanceError: myFunction() arguments[2][1] constructor should be "MyClass", received "MyClass"', () => {
-        arguguard.options.allowSynonymousConstructors = false
-        myFunction(1, myClass, [myClass, fakeMyClass], 4)
-        arguguard.options.allowSynonymousConstructors = true
-      })
       describeError(aboveThreeValidator.Error, 'Arguguard:User:ValidationError:AboveThree: myFunction() arguments[3] should be a number, received "string"', () => {
         myFunction(1, myClass, [myClass, myClass], '4')
       })
@@ -138,23 +123,10 @@ describe('arguguard', () => {
     it('should pass with myFunction(1, myClass, [myClass, myClass], 4)', () => {
       myFunction(1, myClass, [myClass, myClass], 4)
     })
-    it('should pass with myFunction(1, mySubClass, [mySubClass, mySubClass], 4)', () => {
-      myFunction(1, mySubClass, [mySubClass, mySubClass], 4)
-    })
-    it('(allowSynonymousConstructors) should pass with myFunction(1, mySubClass, [mySubClass, mySubClass], 4)', () => {
-      arguguard.options.allowSynonymousConstructors = true
-      myFunction(1, mySubClass, [mySubClass, mySubClass], 4)
-      arguguard.options.allowSynonymousConstructors = false
-    })
-    it('(allowSynonymousConstructors) should pass with myFunction(1, fakeMyClass, [fakeMyClass, fakeMyClass], 4)', () => {
-      arguguard.options.allowSynonymousConstructors = true
-      myFunction(1, fakeMyClass, [fakeMyClass, fakeMyClass], 4)
-      arguguard.options.allowSynonymousConstructors = false
-    })
     it('should pass with A:a, number:1, Array:[], object:[], Object:{}, object:{}, Error:error', () => {
       arguguard(
         'success',
-        [A, 'number', Array, 'object', Object, 'object', Error],
+        ['A', 'number', 'Array', 'object', 'Object', 'object', 'Error'],
         [a, 1, [], [], {}, {}, new Error()]
       )
     })
@@ -166,6 +138,9 @@ function describeError(ErrorClass, message, func) {
     let err
     it('should throw', () => {
       try { func() } catch (_err) { err = _err }
+      if (!err) {
+        throw new Error('Did not throw')
+      }
       err.should.be.instanceOf(ErrorClass)
     })
     it(`should have message "${message}"`, () => {

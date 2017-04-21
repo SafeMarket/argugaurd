@@ -3,7 +3,6 @@ const ApiLabelTypeError = require('./errors/api/LabelType')
 const ApiArgsInstanceError = require('./errors/api/ArgsInstance')
 const ApiDescriptionsInstanceError = require('./errors/api/DescriptionsInstance')
 const ApiDescriptionError = require('./errors/api/Description')
-const ApiArrayDescriptionLengthError = require('./errors/api/ArrayDescriptionLength')
 
 const UserArgumentsLengthError = require('./errors/user/ArgumentsLength')
 const UserArgumentTypeError = require('./errors/user/ArgumentType')
@@ -12,48 +11,52 @@ const UserArgumentInstanceError = require('./errors/user/ArgumentInstance')
 const Validator = require('./lib/Validator')
 const getMessage = require('./lib/getMessage')
 
-function hasConstructor(thing) {
-  try {
-    if (thing.constructor) {
-      return true
-    }
-  } catch (err) {
-    return false
+function getConstructorName(argument) {
+  if (argument === undefined) {
+    return 'undefined'
   }
+  if (!argument.constructor) {
+    return argument
+  }
+  return argument.constructor.name
 }
 
 function argumentValidate(label, description, argument) {
   if (description instanceof Validator) {
     try {
       description.test(argument)
+      return
     } catch (err) {
       throw new description.Error(`${label} ${err.message}`)
     }
-  } else if (typeof description === 'string') {
-    // eslint-disable-next-line valid-typeof
-    if (typeof argument !== description) {
-      throw new UserArgumentTypeError(getMessage(`${label} type`, description, typeof argument))
-    }
-  } else if (typeof description === 'function') {
-    if (!hasConstructor(argument)) {
-      throw new UserArgumentInstanceError(getMessage(`${label} constructor`, description.name, argument))
-    } else if (argument instanceof description) {
-      return
-    } else if (arguguard.options.allowSynonymousConstructors === true
-      && description.name === argument.constructor.name
-    ) {
-      return
-    }
-    throw new UserArgumentInstanceError(getMessage(`${label} constructor`, description.name, argument.constructor.name))
-  } else if (description instanceof Array) {
+  }
+
+  const isArray = description.indexOf('[]') === 0
+  if (isArray) {
     if (!(argument instanceof Array)) {
       throw new UserArgumentInstanceError(
-        getMessage(`${label} constructor`, 'Array', hasConstructor(argument) ? argument.constructor.name : argument)
+        getMessage(`${label} constructor`, 'Array', getConstructorName(argument))
       )
     }
     argument.forEach((_argument, _index) => {
-      argumentValidate(`${label}[${_index}]`, description[0], _argument)
+      argumentValidate(`${label}[${_index}]`, description.substr(2), _argument)
     })
+    return
+  }
+
+  // eslint-disable-next-line valid-typeof
+  const firstLetter = description[0]
+  const isLowerCase = firstLetter === firstLetter.toLowerCase()
+
+  if (isLowerCase) {
+    if (typeof argument !== description) {
+      throw new UserArgumentTypeError(getMessage(`${label} type`, description, typeof argument))
+    }
+    return
+  }
+
+  if (argument === undefined || description !== getConstructorName(argument)) {
+    throw new UserArgumentInstanceError(getMessage(`${label} constructor`, description, getConstructorName(argument)))
   }
 }
 
@@ -102,16 +105,6 @@ function apiDescriptionValidate(label, description) {
   if (typeof description === 'string') {
     return
   }
-  if (typeof description === 'function') {
-    return
-  }
-  if (description instanceof Array) {
-    if (description.length !== 1) {
-      throw new ApiArrayDescriptionLengthError(getMessage(`${label} length`, 1, description.length))
-    }
-    apiDescriptionValidate(`${label}[0]`, description[0])
-    return
-  }
-  throw new ApiDescriptionError(getMessage(label, 'string/function/Array/Validator', typeof description))
+  throw new ApiDescriptionError(getMessage(label, 'string/Validator', typeof description))
 
 }

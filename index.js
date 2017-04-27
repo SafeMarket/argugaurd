@@ -45,7 +45,7 @@ function argumentValidate(label, description, argument) {
   }
 
   // eslint-disable-next-line valid-typeof
-  const firstLetter = description[0]
+  const firstLetter = description.charAt(0)
   const isLowerCase = firstLetter === firstLetter.toLowerCase()
 
   if (isLowerCase) {

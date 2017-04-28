@@ -22,6 +22,11 @@ function getConstructorName(argument) {
 }
 
 function argumentValidate(label, description, argument) {
+
+  if (description === '*') {
+    return
+  }
+
   if (description instanceof Validator) {
     try {
       description.test(argument)

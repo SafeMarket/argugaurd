@@ -42,6 +42,9 @@ const fakeMyClass = new FakeMyClass()
 function myFunction() {
   arguguard('myFunction()', ['number', 'MyClass', '[]MyClass', aboveThreeValidator], arguments)
 }
+function myWildcardFunction() {
+  arguguard('myWildcardFunction()', ['*'], arguments)
+}
 
 function callback() {}
 
@@ -129,6 +132,12 @@ describe('arguguard', () => {
         ['A', 'number', 'Array', 'object', 'Object', 'object', 'Error'],
         [a, 1, [], [], {}, {}, new Error()]
       )
+    })
+    it('should allow anything for myWildcardFunction', () => {
+      myWildcardFunction('a')
+      myWildcardFunction(myClass)
+      myWildcardFunction(fakeMyClass)
+      myWildcardFunction(2)
     })
   })
 })
